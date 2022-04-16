@@ -2,6 +2,7 @@ package org.linecountreporter.file.collector;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.linecountreporter.utils.Utils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class FileCollectorTest {
     private FileCollector fileCollector;
-    private static final String FILE_COLLECTOR_DIRECTORY_PATH = "src/test/resources/file-collector";
+    private static final String FILE_COLLECTOR_DIRECTORY_PATH = Utils.RESOURCES_DIRECTORY_PATH + "/file-collector";
     private static final String DIRECTORY_1_PATH = FILE_COLLECTOR_DIRECTORY_PATH + "/directory-1";
     private static final String DIRECTORY_2_PATH = FILE_COLLECTOR_DIRECTORY_PATH + "/directory-2";
 
