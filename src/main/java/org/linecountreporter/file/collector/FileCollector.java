@@ -2,6 +2,7 @@ package org.linecountreporter.file.collector;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class FileCollector {
@@ -38,6 +39,7 @@ public class FileCollector {
     private void updateDirectoryContents() {
         if (hasValidPath()) {
             this.directoryContents = new File(this.path).listFiles();
+            Arrays.sort(directoryContents);
         } else {
             this.directoryContents = new File[0];
         }

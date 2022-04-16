@@ -1,0 +1,10 @@
+**********
+TEST TITLE
+**********
+
+Path: src/test/resources/line-count-report-writer
+
+- file1.txt => 9
+- file2.txt => 12
+- file3.txt => 7
+- output.txt => 10

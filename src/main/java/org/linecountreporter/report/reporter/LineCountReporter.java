@@ -5,17 +5,19 @@ import org.linecountreporter.file.collector.FileCollector;
 import org.linecountreporter.file.counter.FileLineCounter;
 
 import java.nio.file.Path;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 public class LineCountReporter {
-    private Map<String, Long> report = new HashMap<>();
+    private Map<String, Long> report = new LinkedHashMap<>();
     private FileCollector fileCollector;
+    private String path;
 
     public LineCountReporter(FileCollector fileCollector) {
         this.fileCollector = fileCollector;
         generateReport();
+        this.path = fileCollector.getPath();
     }
 
     @VisibleForTesting
@@ -41,5 +43,9 @@ public class LineCountReporter {
 
     public FileCollector getFileCollector() {
         return this.fileCollector;
+    }
+
+    public String getPath() {
+        return this.path;
     }
 }
