@@ -10,21 +10,25 @@ import java.util.Map;
 import java.util.Set;
 
 public class LineCountReportWriter implements ReportWriter {
-    public static final long DEFAULT_LINE_COUNT_LIMIT = 0L;
-    private Options options;
-    private LineCountReporter lineCounterReporter;
+    private static final long DEFAULT_LINE_COUNT_LIMIT = 0L;
+    private static final long DEFAULT_LINE_COUNT_MEASURE = 0L;
+
     private String directoryPath;
+    private LineCountReporter lineCounterReporter;
+    private Options options;
     private String title;
     private String fileType;
     private long lineCountLimit;
+    private Long lineCountMeasure;
 
-    public LineCountReportWriter(Options options, LineCountReporter lineCounterReporter) {
-        this.options = options;
+    public LineCountReportWriter(LineCountReporter lineCounterReporter, Options options) {
         this.lineCounterReporter = lineCounterReporter;
         this.directoryPath = lineCounterReporter.getPath();
+        this.options = options;
         this.title = options.getTitleOrDefault();
         this.fileType = options.getFileTypeOrDefault();
         this.lineCountLimit = options.getLineCountLimit();
+        this.lineCountMeasure = options.getLineCountMeasure();
     }
 
     @Override
@@ -40,7 +44,11 @@ public class LineCountReportWriter implements ReportWriter {
             writeHeader(writer);
             writePathInformation(writer);
             for (var entry : report.entrySet()) {
-                String result = "- " + entry.getKey() + " => " + entry.getValue();
+                String filename = entry.getKey();
+                long lineCount = entry.getValue();
+
+                String result = "- " + filename + " => " + lineCount;
+                result += resultIfLineCountMeasureIsSet(lineCount);
                 writer.println(result);
             }
         } catch (IOException e) {
@@ -73,6 +81,19 @@ public class LineCountReportWriter implements ReportWriter {
 
             report.keySet().removeAll(filesToRemoveFromReport);
         }
+    }
+
+    private String resultIfLineCountMeasureIsSet(long lineCount) {
+        if (lineCountMeasure != DEFAULT_LINE_COUNT_MEASURE) {
+            double result = calculateMeasureResult(lineCount);
+            return " (" + result + "%)";
+        }
+        return "";
+    }
+
+    private double calculateMeasureResult(long lineCount) {
+        double lineCountMeasureAsDecimal = this.lineCountMeasure.doubleValue();
+        return lineCount / lineCountMeasureAsDecimal * 100;
     }
 
     private void writePathInformation(PrintWriter writer) {
