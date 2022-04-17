@@ -10,11 +10,13 @@ import java.util.Map;
 import java.util.Set;
 
 public class LineCountReportWriter implements ReportWriter {
+    public static final long DEFAULT_LINE_COUNT_LIMIT = 0L;
     private Options options;
     private LineCountReporter lineCounterReporter;
     private String directoryPath;
     private String title;
     private String fileType;
+    private long lineCountLimit;
 
     public LineCountReportWriter(Options options, LineCountReporter lineCounterReporter) {
         this.options = options;
@@ -22,6 +24,7 @@ public class LineCountReportWriter implements ReportWriter {
         this.directoryPath = lineCounterReporter.getPath();
         this.title = options.getTitleOrDefault();
         this.fileType = options.getFileTypeOrDefault();
+        this.lineCountLimit = options.getLineCountLimit();
     }
 
     @Override
@@ -29,6 +32,7 @@ public class LineCountReportWriter implements ReportWriter {
         Map<String, Long> report = lineCounterReporter.getReport();
 
         filterReportOnFileType(report);
+        filterReportOnLineCountLimit(report);
 
         String outFile = this.directoryPath + "/output.txt";
 
@@ -54,6 +58,21 @@ public class LineCountReportWriter implements ReportWriter {
         }
 
         report.keySet().removeAll(filesToRemoveFromReport);
+    }
+
+    private void filterReportOnLineCountLimit(Map<String, Long> report) {
+        if (lineCountLimit != DEFAULT_LINE_COUNT_LIMIT) {
+            Set<String> filesToRemoveFromReport = new HashSet<>();
+            for (String filename: report.keySet()) {
+                long limit = options.getLineCountLimit();
+                long fileLineCount = report.get(filename);
+                if (fileLineCount > limit) {
+                    filesToRemoveFromReport.add(filename);
+                }
+            }
+
+            report.keySet().removeAll(filesToRemoveFromReport);
+        }
     }
 
     private void writePathInformation(PrintWriter writer) {
