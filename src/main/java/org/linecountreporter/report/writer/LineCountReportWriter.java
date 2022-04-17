@@ -5,22 +5,31 @@ import org.linecountreporter.report.reporter.LineCountReporter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class LineCountReportWriter implements ReportWriter {
-    private String title;
+    private Options options;
     private LineCountReporter lineCounterReporter;
     private String directoryPath;
+    private String title;
+    private String fileType;
 
-    public LineCountReportWriter(String title, LineCountReporter lineCounterReporter) {
-        this.title = title;
+    public LineCountReportWriter(Options options, LineCountReporter lineCounterReporter) {
+        this.options = options;
         this.lineCounterReporter = lineCounterReporter;
         this.directoryPath = lineCounterReporter.getPath();
+        this.title = options.getTitleOrDefault();
+        this.fileType = options.getFileTypeOrDefault();
     }
 
     @Override
     public void writeReport() {
         Map<String, Long> report = lineCounterReporter.getReport();
+
+        filterReportOnFileType(report);
+
         String outFile = this.directoryPath + "/output.txt";
 
         try (PrintWriter writer = new PrintWriter(outFile, StandardCharsets.UTF_8)) {
@@ -33,6 +42,18 @@ public class LineCountReportWriter implements ReportWriter {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void filterReportOnFileType(Map<String, Long> report) {
+        Set<String> filesToRemoveFromReport = new HashSet<>();
+        for (String filename: report.keySet()) {
+            String filetype = options.getFileTypeOrDefault();
+            if (!filename.endsWith(filetype.toLowerCase())) {
+                filesToRemoveFromReport.add(filename);
+            }
+        }
+
+        report.keySet().removeAll(filesToRemoveFromReport);
     }
 
     private void writePathInformation(PrintWriter writer) {
