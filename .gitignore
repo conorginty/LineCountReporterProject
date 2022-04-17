@@ -106,3 +106,6 @@ nb-configuration.xml
 ## OS X
 ##############################
 .DS_Store
+
+# Test Output Text Files
+*output.txt
