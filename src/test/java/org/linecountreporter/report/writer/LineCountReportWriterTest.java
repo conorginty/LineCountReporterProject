@@ -27,7 +27,7 @@ class LineCountReportWriterTest {
             .build();
 
         LineCountReportWriter lineCountReportWriter =
-            new LineCountReportWriter(options, lineCounterReporter);
+            new LineCountReportWriter(lineCounterReporter, options);
         lineCountReportWriter.writeReport();
 
         File reportFile = new File(LINE_COUNT_REPORT_WRITER_PATH);
@@ -60,7 +60,7 @@ class LineCountReportWriterTest {
             .build();
 
         LineCountReportWriter lineCountReportWriter =
-            new LineCountReportWriter(options, lineCounterReporter);
+            new LineCountReportWriter(lineCounterReporter, options);
         lineCountReportWriter.writeReport();
 
         File outputFile = new File(path + "/output.txt");
@@ -86,7 +86,7 @@ class LineCountReportWriterTest {
             .build();
 
         LineCountReportWriter lineCountReportWriter =
-            new LineCountReportWriter(options, lineCounterReporter);
+            new LineCountReportWriter(lineCounterReporter, options);
         lineCountReportWriter.writeReport();
 
         File outputFile = new File(path + "/output.txt");
@@ -99,5 +99,22 @@ class LineCountReportWriterTest {
             .collect(Collectors.toList());
 
         assertEquals(2, result.size());
+    }
+
+    @Test
+    void should_generate_report_text_document_with_line_count_measure_output_when_option_set() {
+        String path = LINE_COUNT_REPORT_WRITER_PATH + "/line-count-measure-test";
+        FileCollector fileCollector = new FileCollector(path);
+        LineCountReporter lineCounterReporter = new LineCountReporter(fileCollector);
+
+        Options options = new Options.OptionsBuilder()
+            .lineCountMeasure(5)
+            .build();
+
+        LineCountReportWriter lineCountReportWriter =
+            new LineCountReportWriter(lineCounterReporter, options);
+        lineCountReportWriter.writeReport();
+
+
     }
 }
