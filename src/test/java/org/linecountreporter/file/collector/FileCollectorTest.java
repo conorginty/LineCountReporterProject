@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.linecountreporter.utils.Utils;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,9 +13,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class FileCollectorTest {
     private FileCollector fileCollector;
-    private static final String FILE_COLLECTOR_DIRECTORY_PATH = Utils.RESOURCES_DIRECTORY_PATH + "/file-collector";
-    private static final String DIRECTORY_1_PATH = FILE_COLLECTOR_DIRECTORY_PATH + "/directory-1";
-    private static final String DIRECTORY_2_PATH = FILE_COLLECTOR_DIRECTORY_PATH + "/directory-2";
+    private static final Path FILE_COLLECTOR_DIRECTORY_PATH = Path.of(Utils.RESOURCES_DIRECTORY_PATH + "/file-collector");
+    private static final Path DIRECTORY_1_PATH = Path.of(FILE_COLLECTOR_DIRECTORY_PATH + "/directory-1");
+    private static final Path DIRECTORY_2_PATH = Path.of(FILE_COLLECTOR_DIRECTORY_PATH + "/directory-2");
 
     @BeforeEach
     void setup() {
@@ -22,19 +23,17 @@ class FileCollectorTest {
     }
 
     @Test
-    void can_verify_path_validity() {
-        assertTrue(fileCollector.hasValidPath());
-
-        String invalidPath = "i/don't/exist";
-        fileCollector = new FileCollector(invalidPath);
-        assertFalse(fileCollector.hasValidPath());
+    void given_an_invalid_path_then_throw_exception() {
+        Path invalidPath = Path.of("i/don't/exist");
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> new FileCollector(invalidPath));
+        assertEquals(String.format("Supplied path: %s does not exist", invalidPath), exception.getMessage());
     }
 
     @Test
     void can_update_path_to_directory() {
         assertEquals(DIRECTORY_1_PATH, fileCollector.getPath());
 
-        String updatedPath = DIRECTORY_2_PATH;
+        Path updatedPath = DIRECTORY_2_PATH;
         fileCollector.updatePath(updatedPath);
         assertEquals(updatedPath, fileCollector.getPath());
     }
@@ -53,22 +52,23 @@ class FileCollectorTest {
 
     @Test
     void when_path_is_updated_then_directory_contents_also_gets_updated() {
-        File[] expected = new File[2];
-        expected[0] = new File(DIRECTORY_1_PATH + "/dir1_file1.txt");
-        expected[1] = new File(DIRECTORY_1_PATH + "/dir1_file2.txt");
+        List<File> expected = new ArrayList<>();
+        expected.add(new File(DIRECTORY_1_PATH + "/dir1_file1.txt"));
+        expected.add(new File(DIRECTORY_1_PATH + "/dir1_file2.txt"));
 
-        File[] actual = fileCollector.getDirectoryContents();
+        List<File> actual = fileCollector.getDirectoryContents();
 
-        assertArrayEquals(expected, actual);
+        assertEquals(expected, actual);
 
         fileCollector.updatePath(DIRECTORY_2_PATH);
 
-        expected[0] = new File(DIRECTORY_2_PATH + "/dir2_file1.txt");
-        expected[1] = new File(DIRECTORY_2_PATH + "/dir2_file2.txt");
+        expected.clear();
+        expected.add(new File(DIRECTORY_2_PATH + "/dir2_file1.txt"));
+        expected.add(new File(DIRECTORY_2_PATH + "/dir2_file2.txt"));
 
         actual = fileCollector.getDirectoryContents();
 
-        assertArrayEquals(expected, actual);
+        assertEquals(expected, actual);
     }
 
     @Test

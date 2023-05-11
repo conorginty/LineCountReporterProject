@@ -1,64 +1,45 @@
 package org.linecountreporter.file.collector;
 
+import org.linecountreporter.validator.PathValidator;
+
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class FileCollector {
-    private String path;
-    private File[] directoryContents;
-    private List<File> files = new ArrayList<>();
-    private List<String> filenames = new ArrayList<>();
+    private Path path;
+    private List<File> directoryContents;
+    private final List<File> files = new ArrayList<>();
+    private final List<String> filenames = new ArrayList<>();
 
-    public FileCollector(String path) {
+    public FileCollector(Path path) {
         this.path = path;
-        updateDirectoryContents();
-        collectFilesAndFilenames();
+        update();
     }
 
-    public void updatePath(String updatedPath) {
+    public void updatePath(Path updatedPath) {
         this.path = updatedPath;
-        updateDirectoryContents();
+        update();
     }
 
-    private boolean directoryExists() {
-        File directory = new File(this.path);
-        return directory.exists();
+    private void update() {
+        PathValidator.validateDirectory(this.path);
+        this.directoryContents = new ArrayList<>(List.of(Objects.requireNonNull(new File(this.path.toString()).listFiles())));
+        directoryContents.sort(File::compareTo);
+        updateFilesAndFilenames();
     }
 
-    private boolean isDirectory() {
-        File directory = new File(this.path);
-        return directory.isDirectory();
-    }
-
-    public boolean hasValidPath() {
-        return directoryExists() && isDirectory();
-    }
-
-    private void updateDirectoryContents() {
-        if (hasValidPath()) {
-            this.directoryContents = new File(this.path).listFiles();
-            Arrays.sort(directoryContents);
-        } else {
-            this.directoryContents = new File[0];
-        }
-        collectFilesAndFilenames();
-    }
-
-    private void collectFilesAndFilenames() {
-        clearFiles();
+    private void updateFilesAndFilenames() {
         collectFiles();
 
-        clearFilenames();
+
         collectFilenames();
     }
 
-    private void clearFiles() {
-        this.files.clear();
-    }
-
     private void collectFiles() {
+        clearFiles();
         for (File item: directoryContents) {
             if (item.isFile()) {
                 this.files.add(item);
@@ -66,19 +47,22 @@ public class FileCollector {
         }
     }
 
+    private void clearFiles() {
+        this.files.clear();
+    }
+
+    private void collectFilenames() {
+        clearFilenames();
+        for (File file: this.files) {
+            this.filenames.add(file.getName());
+        }
+    }
+
     private void clearFilenames() {
         this.filenames.clear();
     }
 
-    private void collectFilenames() {
-        for (File item: directoryContents) {
-            if (item.isFile()) {
-                this.filenames.add(item.getName());
-            }
-        }
-    }
-
-    public String getPath() {
+    public Path getPath() {
         return this.path;
     }
 
@@ -90,7 +74,7 @@ public class FileCollector {
         return this.filenames;
     }
 
-    public File[] getDirectoryContents() {
+    public List<File> getDirectoryContents() {
         return this.directoryContents;
     }
 }

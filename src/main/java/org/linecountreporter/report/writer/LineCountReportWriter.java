@@ -5,6 +5,7 @@ import org.linecountreporter.report.reporter.LineCountReporter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -13,7 +14,7 @@ public class LineCountReportWriter implements ReportWriter {
     private static final long DEFAULT_LINE_COUNT_LIMIT = 0L;
     private static final long DEFAULT_LINE_COUNT_MEASURE = 0L;
 
-    private String directoryPath;
+    private Path directoryPath;
     private LineCountReporter lineCounterReporter;
     private Options options;
     private String title;

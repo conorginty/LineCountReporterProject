@@ -4,48 +4,47 @@ import com.google.common.annotations.VisibleForTesting;
 import org.linecountreporter.file.collector.FileCollector;
 import org.linecountreporter.file.counter.FileLineCounter;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 public class LineCountReporter {
-    private Map<String, Long> report = new LinkedHashMap<>();
-    private FileCollector fileCollector;
-    private String path;
+    private final Map<String, Long> report = new LinkedHashMap<>();
+    private final FileCollector fileCollector;
+    private final Path path;
 
     public LineCountReporter(FileCollector fileCollector) {
         this.fileCollector = fileCollector;
-        generateReport();
         this.path = fileCollector.getPath();
+        generateReport();
     }
 
     @VisibleForTesting
     void generateReport() {
         List<String> filenames = this.fileCollector.getFilenames();
-        for (String filename: filenames) {
-            String path = generatePathToFile(this.fileCollector.getPath(), filename);
-            long lineCount = FileLineCounter.lineCount(Path.of(path));
-            this.report.put(filename, lineCount);
-        }
-    }
-
-    private String generatePathToFile(String directoryPath, String filename) {
-        if (directoryPath.endsWith("/")) {
-            return directoryPath + filename;
-        }
-        return directoryPath + "/" + filename;
-    }
-
-    public Map<String, Long> getReport() {
-        return this.report;
+        filenames.stream()
+            .map(path::resolve)
+            .forEach(path -> {
+                try {
+                    long lineCount = FileLineCounter.lineCount(path);
+                    this.report.put(path.getFileName().toString(), lineCount);
+                } catch (IOException e) {
+                    throw new RuntimeException("Something went wrong while the lines were counted", e);
+                }
+            });
     }
 
     public FileCollector getFileCollector() {
         return this.fileCollector;
     }
 
-    public String getPath() {
+    public Path getPath() {
         return this.path;
+    }
+
+    public Map<String, Long> getReport() {
+        return this.report;
     }
 }
