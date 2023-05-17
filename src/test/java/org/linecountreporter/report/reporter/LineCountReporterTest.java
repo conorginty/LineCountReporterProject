@@ -2,9 +2,12 @@ package org.linecountreporter.report.reporter;
 
 import org.junit.jupiter.api.Test;
 import org.linecountreporter.file.collector.FileCollector;
+import org.linecountreporter.report.model.LineCountReport;
+import org.linecountreporter.report.model.ReportItem;
 import org.linecountreporter.utils.Utils;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -14,14 +17,15 @@ class LineCountReporterTest {
 
     @Test
     void should_give_accurate_line_count_report() {
-        Map<String, Long> expected = Map.of(
-            "file1.txt", 6L,
-            "file2.txt", 7L
+        List<ReportItem> expected = List.of(
+            new ReportItem("file1.txt", 6L),
+            new ReportItem("file2.txt", 7L)
         );
 
         FileCollector fileCollector = new FileCollector(LINE_COUNT_REPORTER_DIRECTORY_PATH);
         LineCountReporter lineCountReporter = new LineCountReporter(fileCollector);
-        Map<String, Long> actual = lineCountReporter.getReport();
+        LineCountReport lineCountReport = lineCountReporter.generateReport();
+        List<ReportItem> actual = lineCountReport.getReportItems();
 
         assertEquals(expected, actual);
     }

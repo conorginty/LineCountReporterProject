@@ -1,39 +1,38 @@
 package org.linecountreporter.report.reporter;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.linecountreporter.file.collector.FileCollector;
 import org.linecountreporter.file.counter.FileLineCounter;
+import org.linecountreporter.report.model.LineCountReport;
+import org.linecountreporter.report.model.ReportItem;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 public class LineCountReporter {
-    private final Map<String, Long> report = new LinkedHashMap<>();
     private final FileCollector fileCollector;
     private final Path path;
 
     public LineCountReporter(FileCollector fileCollector) {
         this.fileCollector = fileCollector;
         this.path = fileCollector.getPath();
-        generateReport();
     }
 
-    @VisibleForTesting
-    void generateReport() {
-        List<String> filenames = this.fileCollector.getFilenames();
-        filenames.stream()
-            .map(path::resolve)
-            .forEach(path -> {
+    public LineCountReport generateReport() {
+        List<String> filenames = fileCollector.getFilenames();
+        List<ReportItem> report = filenames.stream()
+            .map(filename -> {
+                Path filePath = this.path.resolve(filename);
                 try {
-                    long lineCount = FileLineCounter.lineCount(path);
-                    this.report.put(path.getFileName().toString(), lineCount);
+                    long lineCount = FileLineCounter.lineCount(filePath);
+                    return new ReportItem(filename, lineCount);
                 } catch (IOException e) {
-                    throw new RuntimeException("Something went wrong while the lines were counted", e);
+                    throw new RuntimeException("Failed to count lines in file: " + filePath, e);
                 }
-            });
+            }).collect(Collectors.toList());
+
+        return new LineCountReport(fileCollector.getPath(), report);
     }
 
     public FileCollector getFileCollector() {
@@ -42,9 +41,5 @@ public class LineCountReporter {
 
     public Path getPath() {
         return this.path;
-    }
-
-    public Map<String, Long> getReport() {
-        return this.report;
     }
 }

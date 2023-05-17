@@ -1,70 +1,76 @@
 package org.linecountreporter.report.writer;
 
+import org.linecountreporter.report.model.ReportItem;
+
+import java.util.*;
+import java.util.function.Predicate;
+
 public class Options {
-    private final String title;
-    private final String fileType;
-    private final long lineCountLimit;
-    private final long lineCountMeasure;
+    private static final String INVALID_VALUE_MSG = "Invalid %s value: ";
+    private static final String LINE_COUNT_MEASURE = "lineCountMeasure";
+    private static final String LINE_COUNT_LIMIT = "lineCountLimit";
+    private final Properties config;
 
-    public Options(OptionsBuilder builder) {
-        this.title = builder.title;
-        this.fileType = builder.fileType;
-        this.lineCountLimit = builder.lineCountLimit;
-        this.lineCountMeasure = builder.lineCountMeasure;
+    public Options(Properties config) {
+        this.config = config;
     }
 
-    public String getTitleOrDefault() {
-        if (this.title == null) {
-            return "LINE COUNT REPORT";
-        }
-        return this.title;
+    public List<Predicate<ReportItem>> getFilters() {
+        List<Predicate<ReportItem>> filters = new ArrayList<>();
+
+        Optional<Predicate<ReportItem>> fileTypeFilter = getFileTypeFilter();
+        fileTypeFilter.ifPresent(filters::add);
+
+        Optional<Predicate<ReportItem>> lineCountLimitFilter = getLineCountLimitFilter();
+        lineCountLimitFilter.ifPresent(filters::add);
+
+        Optional<Predicate<ReportItem>> lineCountMeasureFilter = getLineCountMeasureFilter();
+        lineCountMeasureFilter.ifPresent(filters::add);
+
+        return filters;
     }
 
-    public String getFileTypeOrDefault() {
-        if (this.fileType == null) {
-            return "";
+    private Optional<Predicate<ReportItem>> getFileTypeFilter() {
+        String fileType = config.getProperty("fileType");
+        if (fileType != null) {
+            Predicate<ReportItem> filter = item -> item.getFilename().endsWith(fileType);
+            return Optional.of(filter);
         }
-        return this.fileType;
+        return Optional.empty();
     }
 
-    public long getLineCountLimit() {
-        return lineCountLimit;
+    private Optional<Predicate<ReportItem>> getLineCountLimitFilter() {
+        String lineCountLimitStr = config.getProperty(LINE_COUNT_LIMIT);
+        if (lineCountLimitStr != null) {
+            try {
+                long lineCountLimit = Long.parseLong(lineCountLimitStr);
+                Predicate<ReportItem> filter = item -> item.getLineCount() <= lineCountLimit;
+                return Optional.of(filter);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException(String.format(INVALID_VALUE_MSG, LINE_COUNT_LIMIT) + lineCountLimitStr);
+            }
+        }
+        return Optional.empty();
     }
 
-    public long getLineCountMeasure() {
-        return lineCountMeasure;
+    private Optional<Predicate<ReportItem>> getLineCountMeasureFilter() {
+        String lineCountMeasureStr = config.getProperty(LINE_COUNT_MEASURE);
+        if (lineCountMeasureStr != null) {
+            try {
+                double lineCountMeasure = Double.parseDouble(lineCountMeasureStr);
+                Predicate<ReportItem> filter = item -> {
+                    double result = calculateMeasureResult(lineCountMeasure, item.getLineCount());
+                    return result >= lineCountMeasure;
+                };
+                return Optional.of(filter);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException(String.format(INVALID_VALUE_MSG, LINE_COUNT_MEASURE) + lineCountMeasureStr);
+            }
+        }
+        return Optional.empty();
     }
 
-    public static class OptionsBuilder {
-        private String title;
-        private String fileType;
-        private long lineCountLimit;
-        private long lineCountMeasure;
-
-        public OptionsBuilder title(String title) {
-            this.title = title;
-            return this;
-        }
-
-        public OptionsBuilder fileType(String fileType) {
-            this.fileType = fileType;
-            return this;
-        }
-
-        public OptionsBuilder lineCountLimit(long lineCountLimit) {
-            this.lineCountLimit = lineCountLimit;
-            return this;
-        }
-
-        public OptionsBuilder lineCountMeasure(long lineCountMeasure) {
-            this.lineCountMeasure = lineCountMeasure;
-            return this;
-        }
-
-        public Options build() {
-            Options options = new Options(this);
-            return options;
-        }
-
+    private double calculateMeasureResult(double lineCountMeasure, long lineCount) {
+        return lineCount / lineCountMeasure * 100;
     }
 }

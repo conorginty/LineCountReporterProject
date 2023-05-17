@@ -1,100 +1,50 @@
 package org.linecountreporter.report.writer;
 
+import org.linecountreporter.report.model.LineCountReport;
+import org.linecountreporter.report.model.ReportItem;
 import org.linecountreporter.report.reporter.LineCountReporter;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.List;
+import java.util.Properties;
 
-public class LineCountReportWriter implements ReportWriter {
-    private static final long DEFAULT_LINE_COUNT_LIMIT = 0L;
-    private static final long DEFAULT_LINE_COUNT_MEASURE = 0L;
+public class LineCountReportWriter {
 
-    private Path directoryPath;
-    private LineCountReporter lineCounterReporter;
-    private Options options;
-    private String title;
-    private String fileType;
-    private long lineCountLimit;
-    private Long lineCountMeasure;
+    private final Path directoryPath;
+    private final LineCountReporter lineCounterReporter;
+    private final ReportItemsFilter reportItemsFilter;
+    private final String title = "THE REPORT TITLE";
 
-    public LineCountReportWriter(LineCountReporter lineCounterReporter, Options options) {
+    public LineCountReportWriter(LineCountReporter lineCounterReporter) {
         this.lineCounterReporter = lineCounterReporter;
         this.directoryPath = lineCounterReporter.getPath();
-        this.options = options;
-        this.title = options.getTitleOrDefault();
-        this.fileType = options.getFileTypeOrDefault();
-        this.lineCountLimit = options.getLineCountLimit();
-        this.lineCountMeasure = options.getLineCountMeasure();
+        Properties config = ConfigurationReader.readConfiguration();
+        Options options = new Options(config);
+        this.reportItemsFilter = new ReportItemsFilter(options);
     }
 
-    @Override
     public void writeReport() {
-        Map<String, Long> report = lineCounterReporter.getReport();
+        LineCountReport lineCountReport = lineCounterReporter.generateReport();
+        List<ReportItem> reportItems = lineCountReport.getReportItems();
 
-        filterReportOnFileType(report);
-        filterReportOnLineCountLimit(report);
+        List<ReportItem> filteredItems = reportItemsFilter.filterReportItems(reportItems);
 
         String outFile = this.directoryPath + "/output.txt";
 
         try (PrintWriter writer = new PrintWriter(outFile, StandardCharsets.UTF_8)) {
             writeHeader(writer);
             writePathInformation(writer);
-            for (var entry : report.entrySet()) {
-                String filename = entry.getKey();
-                long lineCount = entry.getValue();
-
-                String result = "- " + filename + " => " + lineCount;
-                result += resultIfLineCountMeasureIsSet(lineCount);
+            for (ReportItem entry : filteredItems) {
+                String result = "- " + entry.getFilename() + " => " + entry.getLineCount();
+//              TODO: FIX - result += resultIfLineCountMeasureIsSet(entry.getLineCount());
                 writer.println(result);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private void filterReportOnFileType(Map<String, Long> report) {
-        Set<String> filesToRemoveFromReport = new HashSet<>();
-        for (String filename: report.keySet()) {
-            String filetype = options.getFileTypeOrDefault();
-            if (!filename.endsWith(filetype.toLowerCase())) {
-                filesToRemoveFromReport.add(filename);
-            }
-        }
-
-        report.keySet().removeAll(filesToRemoveFromReport);
-    }
-
-    private void filterReportOnLineCountLimit(Map<String, Long> report) {
-        if (lineCountLimit != DEFAULT_LINE_COUNT_LIMIT) {
-            Set<String> filesToRemoveFromReport = new HashSet<>();
-            for (String filename: report.keySet()) {
-                long limit = options.getLineCountLimit();
-                long fileLineCount = report.get(filename);
-                if (fileLineCount > limit) {
-                    filesToRemoveFromReport.add(filename);
-                }
-            }
-
-            report.keySet().removeAll(filesToRemoveFromReport);
-        }
-    }
-
-    private String resultIfLineCountMeasureIsSet(long lineCount) {
-        if (lineCountMeasure != DEFAULT_LINE_COUNT_MEASURE) {
-            double result = calculateMeasureResult(lineCount);
-            return " (" + result + "%)";
-        }
-        return "";
-    }
-
-    private double calculateMeasureResult(long lineCount) {
-        double lineCountMeasureAsDecimal = this.lineCountMeasure.doubleValue();
-        return lineCount / lineCountMeasureAsDecimal * 100;
     }
 
     private void writePathInformation(PrintWriter writer) {
