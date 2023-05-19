@@ -10,4 +10,6 @@ public class DefaultProperties {
     public static final String LINE_COUNT_LIMIT = "lineCountLimit";
     public static final String LINE_COUNT_LIMIT_DEFAULT = "0";
 
+    public static final String OUTPUT_FILENAME = "outputFilename";
+    public static final String OUTPUT_FILENAME_DEFAULT = "output-report.txt";
 }

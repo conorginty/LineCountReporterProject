@@ -41,5 +41,6 @@ public class ReportWriterProgram {
         System.out.println("Report Title: " + reportArguments.getTitle());
         System.out.println("File Type: " + reportArguments.getFileType());
         System.out.println("Line Count Limit: " + reportArguments.getLineCountLimit());
+        System.out.println("Output Filename: " + reportArguments.getOutputFilename());
     }
 }

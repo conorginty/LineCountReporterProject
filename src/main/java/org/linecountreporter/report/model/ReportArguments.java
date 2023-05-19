@@ -10,4 +10,5 @@ public class ReportArguments {
     private String title;
     private String fileType;
     private String lineCountLimit;
+    private String outputFilename;
 }

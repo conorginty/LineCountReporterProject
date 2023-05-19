@@ -30,10 +30,12 @@ class LineCountReportWriterTest {
         ReportArguments reportArguments = new ReportArguments();
         reportArguments.setTitle("title");
         reportArguments.setFileType("txt");
+        String outputFilename = "outputFilename";
+        reportArguments.setOutputFilename(outputFilename);
         LineCountReportWriter lineCountReportWriter = new LineCountReportWriter(lineCounterReporter, reportArguments);
         lineCountReportWriter.writeReport();
 
-        File reportFile = new File(LINE_COUNT_REPORT_WRITER_PATH + "/output.txt");
+        File reportFile = new File(LINE_COUNT_REPORT_WRITER_PATH + "/" + outputFilename);
         assertTrue(reportFile.exists());
 
         List<String> fileLines = extractLinesFromOutputFile(reportFile);

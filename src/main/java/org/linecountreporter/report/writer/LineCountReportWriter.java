@@ -16,7 +16,8 @@ public class LineCountReportWriter {
     private final Path directoryPath;
     private final LineCountReporter lineCounterReporter;
     private final ReportItemsFilter reportItemsFilter;
-    private String title;
+    private final String title;
+    private final String outputFilename;
 
     public LineCountReportWriter(LineCountReporter lineCounterReporter, ReportArguments reportArguments) {
         this.lineCounterReporter = lineCounterReporter;
@@ -24,6 +25,7 @@ public class LineCountReportWriter {
         ReportOptions reportOptions = new ReportOptions(reportArguments);
         this.reportItemsFilter = new ReportItemsFilter(reportOptions);
         this.title = reportArguments.getTitle();
+        this.outputFilename = reportArguments.getOutputFilename();
     }
 
     public void writeReport() {
@@ -32,7 +34,7 @@ public class LineCountReportWriter {
 
         List<ReportItem> filteredItems = reportItemsFilter.filterReportItems(reportItems);
 
-        String outFile = this.directoryPath + "/output.txt";
+        String outFile = String.valueOf(this.directoryPath.resolve(this.outputFilename));
 
         try (PrintWriter writer = new PrintWriter(outFile, StandardCharsets.UTF_8)) {
             writeHeader(writer);

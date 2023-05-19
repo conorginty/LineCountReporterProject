@@ -1,5 +1,6 @@
 package org.linecountreporter.cmd;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.cli.*;
 import org.linecountreporter.report.model.ReportArguments;
 import org.linecountreporter.report.writer.ConfigurationReader;
@@ -16,6 +17,7 @@ public class ParametersParser {
     private final CommandLineParser parser = new DefaultParser();
     private CommandLine cli;
     private final Properties config = ConfigurationReader.readConfiguration();
+    private JvmKiller jvmKiller = new JvmKiller();
 
     public void loadOptions() {
         loadRequiredOptions();
@@ -32,10 +34,12 @@ public class ParametersParser {
         Option title = createOption(SHORT_TITLE, "title", true, "desc", false);
         Option fileType = createOption(SHORT_FILE_TYPE, "file-type", true, "desc", false);
         Option lineCountLimit = createOption(SHORT_LINE_COUNT_LIMIT, "line-count-limit", true, "desc", false);
+        Option outputFilename = createOption(SHORT_OUTPUT_FILENAME, "output-filename", true, "desc", false);
         options.addOption(help);
         options.addOption(title);
         options.addOption(fileType);
         options.addOption(lineCountLimit);
+        options.addOption(outputFilename);
     }
 
     private static Option createOption(String shortOpt, String longOpt, boolean hasArg, String description, boolean isRequired) {
@@ -70,12 +74,13 @@ public class ParametersParser {
         reportArguments.setTitle(getTitle());
         reportArguments.setFileType(getFileType());
         reportArguments.setLineCountLimit(getLineCountLimit());
+        reportArguments.setOutputFilename(getOutputFilename());
     }
 
     private void printHelp() {
         HelpFormatter helpFormatter = new HelpFormatter();
         helpFormatter.printHelp("Line Count Reporter Usage:", options);
-        System.exit(1);
+        jvmKiller.exit();
     }
 
     public Path getRootPath() {
@@ -92,5 +97,14 @@ public class ParametersParser {
 
     public String getLineCountLimit() {
         return cli.getOptionValue(SHORT_LINE_COUNT_LIMIT, config.getProperty(LINE_COUNT_LIMIT, AppProperty.LINE_COUNT_LIMIT.getDefaultValue()));
+    }
+
+    public String getOutputFilename() {
+        return cli.getOptionValue(SHORT_OUTPUT_FILENAME, config.getProperty(OUTPUT_FILENAME, AppProperty.OUTPUT_FILENAME.getDefaultValue()));
+    }
+
+    @VisibleForTesting
+    protected void setJvmKiller(JvmKiller jvmKiller) {
+        this.jvmKiller = jvmKiller;
     }
 }
