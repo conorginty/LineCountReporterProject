@@ -7,8 +7,7 @@ import static org.linecountreporter.report.writer.DefaultProperties.*;
 public enum AppProperty {
     TITLE(DefaultProperties.TITLE, String.class, TITLE_DEFAULT),
     FILE_TYPE(DefaultProperties.FILE_TYPE, String.class, FILE_TYPE_DEFAULT),
-    LINE_COUNT_LIMIT(DefaultProperties.LINE_COUNT_LIMIT, Integer.class, LINE_COUNT_LIMIT_DEFAULT),
-    LINE_COUNT_MEASURE(DefaultProperties.LINE_COUNT_MEASURE, Integer.class, LINE_COUNT_MEASURE_DEFAULT);
+    LINE_COUNT_LIMIT(DefaultProperties.LINE_COUNT_LIMIT, Integer.class, LINE_COUNT_LIMIT_DEFAULT);
 
     private final String propertyName;
     private final Class<?> propertyType;

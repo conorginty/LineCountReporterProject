@@ -1,4 +1,4 @@
-package org.linecountreporter.file.counter;
+package org.linecountreporter.file;
 
 import org.linecountreporter.validator.PathValidator;
 

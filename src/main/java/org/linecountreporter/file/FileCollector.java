@@ -1,4 +1,4 @@
-package org.linecountreporter.file.collector;
+package org.linecountreporter.file;
 
 import org.linecountreporter.validator.PathValidator;
 
@@ -33,8 +33,6 @@ public class FileCollector {
 
     private void updateFilesAndFilenames() {
         collectFiles();
-
-
         collectFilenames();
     }
 

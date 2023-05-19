@@ -2,6 +2,7 @@ package org.linecountreporter.file.collector;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.linecountreporter.file.FileCollector;
 import org.linecountreporter.utils.Utils;
 
 import java.io.File;

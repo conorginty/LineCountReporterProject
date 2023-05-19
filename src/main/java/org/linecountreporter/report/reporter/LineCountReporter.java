@@ -1,7 +1,7 @@
 package org.linecountreporter.report.reporter;
 
-import org.linecountreporter.file.collector.FileCollector;
-import org.linecountreporter.file.counter.FileLineCounter;
+import org.linecountreporter.file.FileCollector;
+import org.linecountreporter.file.FileLineCounter;
 import org.linecountreporter.report.model.LineCountReport;
 import org.linecountreporter.report.model.ReportItem;
 

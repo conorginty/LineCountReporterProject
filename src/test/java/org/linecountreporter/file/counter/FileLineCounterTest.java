@@ -1,6 +1,7 @@
 package org.linecountreporter.file.counter;
 
 import org.junit.jupiter.api.Test;
+import org.linecountreporter.file.FileLineCounter;
 import org.linecountreporter.utils.Utils;
 
 import java.io.IOException;

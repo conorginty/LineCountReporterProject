@@ -1,6 +1,7 @@
 package org.linecountreporter.report.writer;
 
 import org.linecountreporter.report.model.LineCountReport;
+import org.linecountreporter.report.model.ReportArguments;
 import org.linecountreporter.report.model.ReportItem;
 import org.linecountreporter.report.reporter.LineCountReporter;
 
@@ -9,21 +10,20 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Properties;
 
 public class LineCountReportWriter {
 
     private final Path directoryPath;
     private final LineCountReporter lineCounterReporter;
     private final ReportItemsFilter reportItemsFilter;
-    private final String title = "THE REPORT TITLE";
+    private String title;
 
-    public LineCountReportWriter(LineCountReporter lineCounterReporter) {
+    public LineCountReportWriter(LineCountReporter lineCounterReporter, ReportArguments reportArguments) {
         this.lineCounterReporter = lineCounterReporter;
         this.directoryPath = lineCounterReporter.getPath();
-        Properties config = ConfigurationReader.readConfiguration();
-        Options options = new Options(config);
-        this.reportItemsFilter = new ReportItemsFilter(options);
+        ReportOptions reportOptions = new ReportOptions(reportArguments);
+        this.reportItemsFilter = new ReportItemsFilter(reportOptions);
+        this.title = reportArguments.getTitle();
     }
 
     public void writeReport() {

@@ -13,8 +13,6 @@ public class ConfigurationReaderTest {
         Properties properties = ConfigurationReader.readConfiguration();
         assertEquals("LINE COUNT REPORT", properties.getProperty(TITLE));
         assertEquals("txt", properties.getProperty(FILE_TYPE));
-        assertEquals("0", properties.getProperty(LINE_COUNT_LIMIT));
-        assertEquals("0", properties.getProperty(LINE_COUNT_MEASURE));
-
+        assertEquals("1000", properties.getProperty(LINE_COUNT_LIMIT));
     }
 }

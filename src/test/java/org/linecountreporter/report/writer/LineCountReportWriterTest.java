@@ -1,7 +1,8 @@
 package org.linecountreporter.report.writer;
 
 import org.junit.jupiter.api.Test;
-import org.linecountreporter.file.collector.FileCollector;
+import org.linecountreporter.file.FileCollector;
+import org.linecountreporter.report.model.ReportArguments;
 import org.linecountreporter.report.reporter.LineCountReporter;
 import org.linecountreporter.utils.Utils;
 
@@ -26,7 +27,10 @@ class LineCountReportWriterTest {
         FileCollector fileCollector = new FileCollector(LINE_COUNT_REPORT_WRITER_PATH);
         LineCountReporter lineCounterReporter = new LineCountReporter(fileCollector);
 
-        LineCountReportWriter lineCountReportWriter = new LineCountReportWriter(lineCounterReporter);
+        ReportArguments reportArguments = new ReportArguments();
+        reportArguments.setTitle("title");
+        reportArguments.setFileType("txt");
+        LineCountReportWriter lineCountReportWriter = new LineCountReportWriter(lineCounterReporter, reportArguments);
         lineCountReportWriter.writeReport();
 
         File reportFile = new File(LINE_COUNT_REPORT_WRITER_PATH + "/output.txt");

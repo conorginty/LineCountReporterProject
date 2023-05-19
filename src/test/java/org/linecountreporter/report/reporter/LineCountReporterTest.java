@@ -1,14 +1,13 @@
 package org.linecountreporter.report.reporter;
 
 import org.junit.jupiter.api.Test;
-import org.linecountreporter.file.collector.FileCollector;
+import org.linecountreporter.file.FileCollector;
 import org.linecountreporter.report.model.LineCountReport;
 import org.linecountreporter.report.model.ReportItem;
 import org.linecountreporter.utils.Utils;
 
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
