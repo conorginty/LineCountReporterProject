@@ -1,4 +1,4 @@
-package org.linecountreporter.util;
+package org.linecountreporter.validator;
 
 import org.junit.jupiter.api.Test;
 

@@ -12,4 +12,7 @@ public class DefaultProperties {
 
     public static final String OUTPUT_FILENAME = "outputFilename";
     public static final String OUTPUT_FILENAME_DEFAULT = "output-report.txt";
+
+    public static final String RECURSIVE = "recursive";
+    public static final String RECURSIVE_DEFAULT = "false";
 }

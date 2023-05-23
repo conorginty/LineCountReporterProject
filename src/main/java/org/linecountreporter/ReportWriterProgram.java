@@ -1,13 +1,15 @@
 package org.linecountreporter;
 
 import org.linecountreporter.cmd.ParametersParser;
-import org.linecountreporter.file.FileCollector;
+import org.linecountreporter.file.collector.FileEntityCollector;
 import org.linecountreporter.report.model.ReportArguments;
 import org.linecountreporter.report.reporter.LineCountReporter;
 import org.linecountreporter.report.writer.LineCountReportWriter;
 
+import java.io.IOException;
+
 public class ReportWriterProgram {
-    public void createAndWriteReport(String[] args) {
+    public void createAndWriteReport(String[] args) throws IOException {
         ReportArguments reportArguments;
         ParametersParser parametersParser = new ParametersParser();
         parametersParser.loadOptions();
@@ -19,12 +21,13 @@ public class ReportWriterProgram {
         createAndWriteReport(reportArguments);
     }
 
-    private void createAndWriteReport(ReportArguments reportArguments) {
-        FileCollector fileCollector = new FileCollector(reportArguments.getRootPath());
-        LineCountReporter lineCountReporter = new LineCountReporter(fileCollector);
+    private void createAndWriteReport(ReportArguments reportArguments) throws IOException {
+        FileEntityCollector fileEntityCollector = new FileEntityCollector(reportArguments.getRootPath());
+        LineCountReporter lineCountReporter = new LineCountReporter(fileEntityCollector);
         LineCountReportWriter reportWriter = new LineCountReportWriter(lineCountReporter, reportArguments);
 
-        reportWriter.writeReport();
+        boolean recursive = Boolean.parseBoolean(reportArguments.getRecursive());
+        reportWriter.writeReport(recursive);
     }
 
     private void printRequiredArguments(ReportArguments reportArguments) {
@@ -42,5 +45,6 @@ public class ReportWriterProgram {
         System.out.println("File Type: " + reportArguments.getFileType());
         System.out.println("Line Count Limit: " + reportArguments.getLineCountLimit());
         System.out.println("Output Filename: " + reportArguments.getOutputFilename());
+        System.out.println("Recursive Mode: " + reportArguments.getRecursive());
     }
 }

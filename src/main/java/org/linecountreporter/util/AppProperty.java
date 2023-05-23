@@ -8,7 +8,8 @@ public enum AppProperty {
     TITLE(DefaultProperties.TITLE, String.class, TITLE_DEFAULT),
     FILE_TYPE(DefaultProperties.FILE_TYPE, String.class, FILE_TYPE_DEFAULT),
     LINE_COUNT_LIMIT(DefaultProperties.LINE_COUNT_LIMIT, Integer.class, LINE_COUNT_LIMIT_DEFAULT),
-    OUTPUT_FILENAME(DefaultProperties.OUTPUT_FILENAME, String.class, OUTPUT_FILENAME_DEFAULT);
+    OUTPUT_FILENAME(DefaultProperties.OUTPUT_FILENAME, String.class, OUTPUT_FILENAME_DEFAULT),
+    RECURSIVE(DefaultProperties.RECURSIVE, Boolean.class, RECURSIVE_DEFAULT);
 
     private final String propertyName;
     private final Class<?> propertyType;

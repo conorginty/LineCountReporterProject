@@ -3,11 +3,8 @@ package org.linecountreporter.validator;
 import org.junit.jupiter.api.Test;
 import org.linecountreporter.utils.Utils;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashSet;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;

@@ -1,7 +1,8 @@
 package org.linecountreporter.report.writer;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.linecountreporter.file.FileCollector;
+import org.linecountreporter.file.collector.FileEntityCollector;
 import org.linecountreporter.report.model.ReportArguments;
 import org.linecountreporter.report.reporter.LineCountReporter;
 import org.linecountreporter.utils.Utils;
@@ -19,28 +20,36 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class LineCountReportWriterTest {
+class LineCountReportBodyWriterTest {
     private final Path LINE_COUNT_REPORT_WRITER_PATH = Path.of(Utils.RESOURCES_DIRECTORY_PATH + "/line-count-report-writer");
 
+    @AfterEach
+    public void cleanup() {
+        File file = new File(LINE_COUNT_REPORT_WRITER_PATH + "/outputFilename");
+        if (file.exists()) {
+            file.delete();
+        }
+    }
+
     @Test
-    void generate_report_text_document_according_to_properties_file() {
-        FileCollector fileCollector = new FileCollector(LINE_COUNT_REPORT_WRITER_PATH);
-        LineCountReporter lineCounterReporter = new LineCountReporter(fileCollector);
+    void generate_report_text_document_according_to_properties_file() throws IOException {
+        FileEntityCollector fileEntityCollector = new FileEntityCollector(LINE_COUNT_REPORT_WRITER_PATH);
+        LineCountReporter lineCounterReporter = new LineCountReporter(fileEntityCollector);
 
         ReportArguments reportArguments = new ReportArguments();
         reportArguments.setTitle("title");
-        reportArguments.setFileType("txt");
+        reportArguments.setFileType("");
         String outputFilename = "outputFilename";
         reportArguments.setOutputFilename(outputFilename);
         LineCountReportWriter lineCountReportWriter = new LineCountReportWriter(lineCounterReporter, reportArguments);
-        lineCountReportWriter.writeReport();
+        lineCountReportWriter.writeReport(Boolean.parseBoolean(reportArguments.getRecursive()));
 
         File reportFile = new File(LINE_COUNT_REPORT_WRITER_PATH + "/" + outputFilename);
         assertTrue(reportFile.exists());
 
         List<String> fileLines = extractLinesFromOutputFile(reportFile);
         
-        assertEquals(10, fileLines.size());
+        assertEquals(11, fileLines.size());
     }
 
     // TODO - Write more tests with other paths (filetype-test etc) and variations of the properties file (probably with some abstraction as opposed to the prop file itself)

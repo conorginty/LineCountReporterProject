@@ -1,6 +1,6 @@
 package org.linecountreporter.report.writer;
 
-import org.linecountreporter.util.PropertyValidator;
+import org.linecountreporter.validator.PropertyValidator;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

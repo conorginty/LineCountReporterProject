@@ -1,5 +1,7 @@
-package org.linecountreporter.util;
+package org.linecountreporter.validator;
 
+
+import org.linecountreporter.util.AppProperty;
 
 import java.util.Optional;
 

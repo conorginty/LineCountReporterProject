@@ -25,21 +25,23 @@ public class ParametersParser {
     }
 
     private void loadRequiredOptions() {
-        Option filePath = createOption(SHORT_ROOT_PATH, "root-path", true, "descr", true);
+        Option filePath = createOption(SHORT_ROOT_PATH, "root-path", true, "The absolute path of the source folder you wish to generate a line count report for", true);
         options.addOption(filePath);
     }
 
     private void loadOptionalOptions() {
-        Option help = createOption(SHORT_HELP, "help", false, "desc", false);
-        Option title = createOption(SHORT_TITLE, "title", true, "desc", false);
-        Option fileType = createOption(SHORT_FILE_TYPE, "file-type", true, "desc", false);
-        Option lineCountLimit = createOption(SHORT_LINE_COUNT_LIMIT, "line-count-limit", true, "desc", false);
-        Option outputFilename = createOption(SHORT_OUTPUT_FILENAME, "output-filename", true, "desc", false);
+        Option help = createOption(SHORT_HELP, "help", false, "How to use the program", false);
+        Option title = createOption(SHORT_TITLE, "title", true, "Report Title", false);
+        Option fileType = createOption(SHORT_FILE_TYPE, "file-type", true, "Desired files based on extension", false);
+        Option lineCountLimit = createOption(SHORT_LINE_COUNT_LIMIT, "line-count-limit", true, "Desired files based on max line count limit", false);
+        Option outputFilename = createOption(SHORT_OUTPUT_FILENAME, "output-filename", true, "Report output file name", false);
+        Option recursive = createOption(SHORT_RECURSIVE, "recursive", true, "Recursively collect results for all files in an input root path and its sub-folders", false);
         options.addOption(help);
         options.addOption(title);
         options.addOption(fileType);
         options.addOption(lineCountLimit);
         options.addOption(outputFilename);
+        options.addOption(recursive);
     }
 
     private static Option createOption(String shortOpt, String longOpt, boolean hasArg, String description, boolean isRequired) {
@@ -75,6 +77,7 @@ public class ParametersParser {
         reportArguments.setFileType(getFileType());
         reportArguments.setLineCountLimit(getLineCountLimit());
         reportArguments.setOutputFilename(getOutputFilename());
+        reportArguments.setRecursive(getIsRecursive());
     }
 
     private void printHelp() {
@@ -101,6 +104,10 @@ public class ParametersParser {
 
     public String getOutputFilename() {
         return cli.getOptionValue(SHORT_OUTPUT_FILENAME, config.getProperty(OUTPUT_FILENAME, AppProperty.OUTPUT_FILENAME.getDefaultValue()));
+    }
+
+    public String getIsRecursive() {
+        return cli.getOptionValue(SHORT_RECURSIVE, config.getProperty(RECURSIVE, AppProperty.RECURSIVE.getDefaultValue()));
     }
 
     @VisibleForTesting

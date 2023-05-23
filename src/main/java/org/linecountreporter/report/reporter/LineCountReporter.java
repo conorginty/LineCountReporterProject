@@ -1,8 +1,8 @@
 package org.linecountreporter.report.reporter;
 
-import org.linecountreporter.file.FileCollector;
+import org.linecountreporter.file.collector.FileEntityCollector;
 import org.linecountreporter.file.FileLineCounter;
-import org.linecountreporter.report.model.LineCountReport;
+import org.linecountreporter.report.model.LineCountReportBody;
 import org.linecountreporter.report.model.ReportItem;
 
 import java.io.IOException;
@@ -11,17 +11,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class LineCountReporter {
-    private final FileCollector fileCollector;
+    private final FileEntityCollector fileEntityCollector;
     private final Path path;
 
-    public LineCountReporter(FileCollector fileCollector) {
-        this.fileCollector = fileCollector;
-        this.path = fileCollector.getPath();
+    public LineCountReporter(FileEntityCollector fileEntityCollector) {
+        this.fileEntityCollector = fileEntityCollector;
+        this.path = fileEntityCollector.getPath();
     }
 
-    public LineCountReport generateReport() {
-        List<String> filenames = fileCollector.getFilenames();
-        List<ReportItem> report = filenames.stream()
+    public LineCountReportBody generateReport() {
+        List<String> filenames = fileEntityCollector.getFilenames();
+        List<ReportItem> reportItems = filenames.stream()
             .map(filename -> {
                 Path filePath = this.path.resolve(filename);
                 try {
@@ -32,11 +32,11 @@ public class LineCountReporter {
                 }
             }).collect(Collectors.toList());
 
-        return new LineCountReport(fileCollector.getPath(), report);
+        return new LineCountReportBody(fileEntityCollector.getPath(), reportItems);
     }
 
-    public FileCollector getFileCollector() {
-        return this.fileCollector;
+    public FileEntityCollector getFileEntityCollector() {
+        return fileEntityCollector;
     }
 
     public Path getPath() {

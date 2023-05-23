@@ -31,4 +31,9 @@ public class ReportItem {
     public int hashCode() {
         return Objects.hash(filename, lineCount);
     }
+
+    @Override
+    public String toString() {
+        return filename + " => " + lineCount;
+    }
 }

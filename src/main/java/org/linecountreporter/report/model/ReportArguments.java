@@ -11,4 +11,5 @@ public class ReportArguments {
     private String fileType;
     private String lineCountLimit;
     private String outputFilename;
+    private String recursive;
 }
